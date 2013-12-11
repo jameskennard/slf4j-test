@@ -1,5 +1,11 @@
 package uk.org.lidalia.slf4jtest;
 
+import static com.google.common.base.Optional.absent;
+import static com.google.common.base.Optional.fromNullable;
+import static com.google.common.base.Preconditions.checkNotNull;
+import static com.google.common.collect.FluentIterable.from;
+import static java.util.Arrays.asList;
+
 import java.io.PrintStream;
 import java.util.Collections;
 import java.util.Map;
@@ -8,20 +14,12 @@ import org.joda.time.Instant;
 import org.slf4j.Marker;
 import org.slf4j.helpers.MessageFormatter;
 
+import uk.org.lidalia.slf4jext.Level;
+
 import com.google.common.base.Function;
 import com.google.common.base.Optional;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
-
-import uk.org.lidalia.lang.Identity;
-import uk.org.lidalia.lang.RichObject;
-import uk.org.lidalia.slf4jext.Level;
-
-import static com.google.common.base.Optional.absent;
-import static com.google.common.base.Optional.fromNullable;
-import static com.google.common.base.Preconditions.checkNotNull;
-import static com.google.common.collect.FluentIterable.from;
-import static java.util.Arrays.asList;
 
 /**
  * Representation of a call to a logger for test assertion purposes.
@@ -43,7 +41,7 @@ import static java.util.Arrays.asList;
  * defaults.  These are not documented further as they should be self-evident.
  */
 @SuppressWarnings({ "PMD.ExcessivePublicCount", "PMD.TooManyMethods" })
-public class LoggingEvent extends RichObject {
+public class LoggingEvent {
 
     public static LoggingEvent trace(final String message, final Object... arguments) {
         return new LoggingEvent(Level.TRACE, message, arguments);
@@ -332,14 +330,14 @@ public class LoggingEvent extends RichObject {
         }
     };
 
-    @Identity private final Level level;
-    @Identity private final ImmutableMap<String, String> mdc;
-    @Identity private final Optional<Marker> marker;
-    @Identity private final Optional<Throwable> throwable;
-    @Identity private final String message;
-    @Identity private final ImmutableList<Object> arguments;
+    private final Level level;
+    private final ImmutableMap<String, String> mdc;
+    private final Optional<Marker> marker;
+    private final Optional<Throwable> throwable;
+    private final String message;
+    private final ImmutableList<Object> arguments;
 
-    private final Optional<TestLogger> creatingLogger;
+	private final Optional<TestLogger> creatingLogger;
     private final Instant timestamp = new Instant();
     private final String threadName = Thread.currentThread().getName();
 
@@ -433,4 +431,57 @@ public class LoggingEvent extends RichObject {
                 return System.out;
         }
     }
+    
+    // FIXME Add better testing for these generated hashcode and equals methods
+    @Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + ((arguments == null) ? 0 : arguments.hashCode());
+		result = prime * result + ((level == null) ? 0 : level.hashCode());
+		result = prime * result + ((marker == null) ? 0 : marker.hashCode());
+		result = prime * result + ((mdc == null) ? 0 : mdc.hashCode());
+		result = prime * result + ((message == null) ? 0 : message.hashCode());
+		result = prime * result + ((throwable == null) ? 0 : throwable.hashCode());
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		LoggingEvent other = (LoggingEvent) obj;
+		if (arguments == null) {
+			if (other.arguments != null)
+				return false;
+		} else if (!arguments.equals(other.arguments))
+			return false;
+		if (level != other.level)
+			return false;
+		if (marker == null) {
+			if (other.marker != null)
+				return false;
+		} else if (!marker.equals(other.marker))
+			return false;
+		if (mdc == null) {
+			if (other.mdc != null)
+				return false;
+		} else if (!mdc.equals(other.mdc))
+			return false;
+		if (message == null) {
+			if (other.message != null)
+				return false;
+		} else if (!message.equals(other.message))
+			return false;
+		if (throwable == null) {
+			if (other.throwable != null)
+				return false;
+		} else if (!throwable.equals(other.throwable))
+			return false;
+		return true;
+	}
 }
