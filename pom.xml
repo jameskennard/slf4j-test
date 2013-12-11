@@ -41,12 +41,12 @@
     </dependency>
     -->
     <!--
-    -->
     <dependency>
       <groupId>uk.org.lidalia</groupId>
       <artifactId>lidalia-slf4j-ext</artifactId>
       <version>1.0.0</version>
     </dependency>
+    -->
     <dependency>
       <groupId>joda-time</groupId>
       <artifactId>joda-time</artifactId>
